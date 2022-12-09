@@ -1,0 +1,98 @@
+project: 
+  name: yolov5-dvc
+  dir: '.'
+
+data:
+  dataset: coco128
+  train: 'data/coco128.yaml'
+  val: 'data/coco128.yaml'
+  # test: 'data/coco128.yaml' # *.data path
+  export: 'data/coco128.yaml'
+
+train:
+  weights_dir: models/weights
+  weights: 'yolov5s.pt' # initial weights name
+  data: 'data/coco128.yaml' # data.yaml path
+  hyp: 'data/hyps/hyp.scratch-low.yaml' # hyperparameters path
+  epochs: 3
+  batch_size: 16 # total batch size for all GPUs
+  img_size: 32 # image sizes
+  optimizer: Adam # use torch.optim.Adam() optimizer
+  workers: 8 # maximum number of dataloader workers
+  project: 'runs/train' # save to project/name
+  entity: null # W&B entity
+  label_smoothing: 0.0 # Label smoothing epsilon
+  bbox_interval: -1 # Set bounding-box image logging interval for W&B
+  save_period: -1 # Log model after every "save_period" epoch
+  artifact_alias: latest # version of dataset artifact to be used
+  yolo_flags: '--exist-ok'
+    # YOLOv5 flags options (separated by space):
+    # --rect: rectangular training
+    # --resume: resume most recent training
+    # --nosave: only save final checkpoint
+    # --notest: only test final epoch
+    # --noautoanchor: disable AutoAnchor
+    # --image-weights: use weighted image selection for training
+    # --multi-scale: vary img-size +/- 50%%
+    # --single-cls: train multi-class data as single-class
+    # --exist-ok: existing project/name ok, do not increment
+    # --quad: quad dataloader
+    # --cos-lr: linear LR
+    # --sync-bn: use SyncBatchNorm, only available in DDP mode
+    # --upload_dataset: Upload dataset as W&B artifact table
+    # EXAMPLE: '---exist-ok --nosave' 
+  
+  
+val:
+  batch_size: 32 # size of each image batch
+  img_size: 640 # inference size (pixels)
+  conf_thres: 0.001 # object confidence threshold
+  iou_thres: 0.6 # IOU threshold for NMS
+  max_det: 50 # max detections per image
+  workers: 8 # maximum number of dataloader workers
+  project: 'runs/val' # save to project/name
+  # device: '' # cuda device, i.e. 0 or 0,1,2,3 or cpu
+  yolo_flags: '--verbose --save-conf --save-json --exist-ok'
+    # YOLOv5 flags options (separated by space):
+    # --single-cls: treat as single-class dataset
+    # --augment: augmented inference
+    # --verbose: augmented inferencereport mAP by class
+    # --save-txt: save results to *.txt'
+    # --save-hybrid: save label+prediction hybrid results to *.txt
+    # --save-conf: save confidences in --save-txt labels
+    # --save-json: save a COCO-JSON results file
+    # --exist-ok: existing project/name ok, do not increment
+    # --half: use FP16 half-precision inference
+    # --dnn: use OpenCV DNN for ONNX inference
+    # EXAMPLE: '--verbose --save-conf --save-json --exist-ok'
+
+export:
+  weights: runs/train/weights/best.pt # './yolov5s.pt'  # weights path
+  img_size: 640 # image size  # height, width
+  batch_size: 1 # batch size
+  opset: 12 # ONNX opset version  # ONNX-only
+  topk_per_class: 100
+  topk_all: 100
+  iou_thres: 0.45
+  conf_thres: 0.25
+  # device: 'cpu' # cuda device, i.e. 0 or 0,1,2,3 or cpu
+  formats:
+    - name: 'torchscript'
+      ext: 'torchscript'
+    - name: 'onnx'
+      ext: 'onnx'
+    - name: 'coreml'
+      ext: 'mlmodel'
+  yolo_flags: '--verbose' 
+    # YOLOv5 flags options (separated by space):
+    # --half: FP16 half-precision export
+    # --inplace: set YOLOv5 Detect() inplace=True
+    # --keras: TF: use Keras
+    # --optimize: TorchScript: optimize for mobile
+    # --int8: CoreML/TF INT8 quantization
+    # --dynamic: ONNX/TF/TensorRT: dynamic axes
+    # --simplify: ONNX: simplify model
+    # --verbose: TensorRT: verbose log
+    # --nms: TF: add NMS to model
+    # --agnostic-nms: TF: add agnostic NMS to model
+    # EXAMPLE: '--verbose --half' 

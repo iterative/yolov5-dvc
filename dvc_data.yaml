@@ -1,0 +1,24 @@
+vars:
+  - docker_workdir: /usr/src/app
+  - docker_weights: /usr/src/app/models/weights
+  - YOLOV5_IMAGE: openbot-vision-object-detection:latest
+
+stages:
+
+  #TODO: make it work with yolo & custom datasets 
+  # download:
+  #   params:
+  #     - data
+  #   deps:
+  #     - download_dataset.sh
+  # cmd: >-
+  #   docker run -ti
+  #   -u $(id -u)
+  #   -v $(pwd)/datasets:/usr/src/datasets/
+  #   \${YOLOV5_IMAGE}
+  #   bash -c "apt-get install unzip && data/scripts/get_${data.dataset}.sh"
+  #   outs:
+  #     - ./datasets/${data.dataset}s
+
+
+  
