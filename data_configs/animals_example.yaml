@@ -1,0 +1,19 @@
+path: ../datasets/animals_example
+train: train.txt
+val: val.txt
+names:
+  0: bear
+  1: bird
+  2: broccoli
+  3: cake
+  4: cat
+  5: cow
+  6: dog
+  7: elephant
+  8: giraffe
+  9: horse
+  10: pizza
+  11: sheep
+  12: surfboard
+  13: teddy bear
+  14: zebra

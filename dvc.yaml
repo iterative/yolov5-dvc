@@ -1,20 +1,9 @@
 vars:
   - docker_workdir: /usr/src/app
-  - docker_weights: /usr/src/app/models/weights
-  - YOLOV5_IMAGE: openbot-vision-object-detection:latest
+  - docker_datasets_dir: /usr/src/datasets
+  - YOLOV5_IMAGE: yolov5-dvc:latest
 
 stages:
-
-  # download_data:
-  #   params:
-  #     - data
-  #   cmd: >-
-  #     docker run -ti
-  #     -u $(id -u)
-  #     -v "$(pwd)"/datasets:/usr/src/datasets/
-  #     ${YOLOV5_IMAGE}
-  #     bash -c "data/scripts/get_${data.dataset}.sh
-
 
   download_model:
     params:
@@ -22,7 +11,7 @@ stages:
     cmd:
     - |
       docker run \
-        -v "$(pwd)"/models/weights:${docker_weights} \
+        -v "$(pwd)"/models/weights:${docker_workdir}/models/weights \
         ${YOLOV5_IMAGE} \
         python3 -c "from utils.downloads import attempt_download; attempt_download(f'models/weights/${train.weights}')"
     outs:
@@ -34,13 +23,14 @@ stages:
       - train
     cmd: >- 
       docker run
-      -v "$(pwd)"/datasets:/usr/src/datasets
-      -v "$(pwd)"/models/weights:${docker_weights} 
-      -v "$(pwd)"/runs:/usr/src/app/runs 
+      -v "$(pwd)"/data_configs:${docker_workdir}/data_configs
+      -v "$(pwd)"/datasets:${docker_datasets_dir}
+      -v "$(pwd)"/models/weights:${docker_workdir}/models/weights
+      -v "$(pwd)"/runs:${docker_workdir}/runs 
       ${YOLOV5_IMAGE} 
       python3 train.py 
+      --data ${data.data_configs_dir}/${data.data_train}.yaml
       --weights ${train.weights_dir}/${train.weights} 
-      --data ${data.train} 
       --hyp ${train.hyp} 
       --epochs ${train.epochs} 
       --batch-size ${train.batch_size} 
@@ -86,11 +76,12 @@ stages:
   val:
     cmd: >- 
       docker run --ipc=host
-      -v "$(pwd)"/datasets:/usr/src/datasets
-      -v "$(pwd)"/runs:/usr/src/app/runs
+      -v "$(pwd)"/data_configs:${docker_workdir}/data_configs
+      -v "$(pwd)"/datasets:${docker_datasets_dir}
+      -v "$(pwd)"/runs:${docker_workdir}/runs 
       ${YOLOV5_IMAGE}
       python3 val.py
-      --data ${data.val}
+      --data ${data.data_configs_dir}/${data.data_val}.yaml
       --weights ${train.project}/weights/best.pt
       --batch-size  ${val.batch_size}
       --img-size ${val.img_size}
@@ -125,11 +116,11 @@ stages:
     do:
       cmd: >- 
         docker run --ipc=host 
-        -v "$(pwd)"/datasets:/usr/src/datasets
-        -v "$(pwd)"/runs:/usr/src/app/runs
+        -v "$(pwd)"/datasets:${docker_datasets_dir}
+        -v "$(pwd)"/runs:${docker_workdir}/runs 
         ${YOLOV5_IMAGE}
         python3 export.py 
-        --data ${data.export}
+        --data ${data.data_configs_dir}/${data.data_export}.yaml
         --weights ${train.project}/weights/best.pt
         --img-size ${export.img_size}
         --batch-size  ${export.batch_size}

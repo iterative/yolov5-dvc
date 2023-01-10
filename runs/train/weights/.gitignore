@@ -1,1 +1,5 @@
 /best.mlmodel
+/best.onnx
+/last.pt
+/best.pt
+/best.torchscript

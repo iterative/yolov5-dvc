@@ -1,18 +1,25 @@
+base:
+  log_level: INFO
+
 project: 
   name: yolov5-dvc
   dir: '.'
 
 data:
-  dataset: coco128
-  train: 'data/coco128.yaml'
-  val: 'data/coco128.yaml'
-  # test: 'data/coco128.yaml' # *.data path
-  export: 'data/coco128.yaml'
+  datasets_dir: datasets
+  data_configs_dir: data_configs
+  data_train: 'coco128'
+  data_val: 'coco128'
+  # data_test: 'coco128.yaml' 
+  data_export: 'coco128'
+
+prepare_data:
+  is_validate: false
+  val_size: 0.3
 
 train:
   weights_dir: models/weights
   weights: 'yolov5s.pt' # initial weights name
-  data: 'data/coco128.yaml' # data.yaml path
   hyp: 'data/hyps/hyp.scratch-low.yaml' # hyperparameters path
   epochs: 3
   batch_size: 16 # total batch size for all GPUs

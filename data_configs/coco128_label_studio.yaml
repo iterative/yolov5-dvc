@@ -1,0 +1,75 @@
+path: ../datasets/coco128_label_studio
+train: train.txt
+val: val.txt
+names:
+  0: airplane
+  1: backpack
+  2: banana
+  3: baseball bat
+  4: baseball glove
+  5: bear
+  6: bed
+  7: bench
+  8: bicycle
+  9: bird
+  10: boat
+  11: book
+  12: bottle
+  13: bowl
+  14: broccoli
+  15: bus
+  16: cake
+  17: car
+  18: carrot
+  19: cat
+  20: cell phone
+  21: chair
+  22: clock
+  23: couch
+  24: cup
+  25: dining table
+  26: dog
+  27: donut
+  28: elephant
+  29: fork
+  30: frisbee
+  31: giraffe
+  32: handbag
+  33: horse
+  34: hot dog
+  35: kite
+  36: knife
+  37: laptop
+  38: microwave
+  39: motorcycle
+  40: mouse
+  41: orange
+  42: oven
+  43: person
+  44: pizza
+  45: potted plant
+  46: refrigerator
+  47: remote
+  48: sandwich
+  49: scissors
+  50: sink
+  51: skateboard
+  52: skis
+  53: snowboard
+  54: spoon
+  55: sports ball
+  56: stop sign
+  57: suitcase
+  58: teddy bear
+  59: tennis racket
+  60: tie
+  61: toilet
+  62: toothbrush
+  63: traffic light
+  64: train
+  65: truck
+  66: tv
+  67: umbrella
+  68: vase
+  69: wine glass
+  70: zebra

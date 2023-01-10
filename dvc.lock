@@ -3,14 +3,13 @@ stages:
   download_model:
     cmd:
     - "docker run \\\n  -v \"$(pwd)\"/models/weights:/usr/src/app/models/weights \\\
-      \n  openbot-vision-object-detection:latest \\\n  python3 -c \"from utils.downloads\
-      \ import attempt_download; attempt_download(f'models/weights/yolov5s.pt')\"\n"
+      \n  yolov5-dvc:latest \\\n  python3 -c \"from utils.downloads import attempt_download;\
+      \ attempt_download(f'models/weights/yolov5s.pt')\"\n"
     params:
       params.yaml:
         train:
           weights_dir: models/weights
           weights: yolov5s.pt
-          data: data/coco128.yaml
           hyp: data/hyps/hyp.scratch-low.yaml
           epochs: 3
           batch_size: 16
@@ -29,9 +28,9 @@ stages:
       md5: 523cc152dea05959e1a07f04fb43ebcf
       size: 14808437
   train:
-    cmd: docker run -v "$(pwd)"/datasets:/usr/src/datasets -v "$(pwd)"/models/weights:/usr/src/app/models/weights  -v
-      "$(pwd)"/runs:/usr/src/app/runs  openbot-vision-object-detection:latest  python3
-      train.py  --weights models/weights/yolov5s.pt  --data data/coco128.yaml  --hyp
+    cmd: docker run -v "$(pwd)"/data_configs:/usr/src/app/data_configs -v "$(pwd)"/datasets:/usr/src/datasets
+      -v "$(pwd)"/models/weights:/usr/src/app/models/weights -v "$(pwd)"/runs:/usr/src/app/runs  yolov5-dvc:latest  python3
+      train.py  --data data_configs/coco128.yaml --weights models/weights/yolov5s.pt  --hyp
       data/hyps/hyp.scratch-low.yaml  --epochs 3  --batch-size 16  --img-size 32  --optimizer
       Adam  --workers 8  --project runs/train  --name '' --label-smoothing 0.0  --save-period
       -1  --entity None  --bbox_interval -1  --artifact_alias latest --exist-ok
@@ -44,7 +43,6 @@ stages:
         train:
           weights_dir: models/weights
           weights: yolov5s.pt
-          data: data/coco128.yaml
           hyp: data/hyps/hyp.scratch-low.yaml
           epochs: 3
           batch_size: 16
@@ -90,20 +88,21 @@ stages:
       md5: 0848455b9b8550f3538ca898ecafa954
       size: 291783
     - path: runs/train/weights/best.pt
-      md5: 307b9f8f7e90a394d1dceb3ab5898ce8
+      md5: 1013224332cb144f74ae831d05263bec
       size: 14641277
     - path: runs/train/weights/last.pt
-      md5: 326dd87f9c03ef307f15ac5a72e88b4f
+      md5: 51bb184f54a2b62a43b293ef591bb856
       size: 14641277
   val:
-    cmd: docker run --ipc=host -v "$(pwd)"/datasets:/usr/src/datasets -v "$(pwd)"/runs:/usr/src/app/runs
-      openbot-vision-object-detection:latest python3 val.py --data data/coco128.yaml
-      --weights runs/train/weights/best.pt --batch-size  32 --img-size 640 --conf-thres
-      0.001 --iou-thres 0.6 --max-det 50 --task val --project runs/val --name '' --verbose
-      --save-conf --save-json --exist-ok
+    cmd: docker run --ipc=host -v "$(pwd)"/data_configs:/usr/src/app/data_configs
+      -v "$(pwd)"/datasets:/usr/src/datasets -v "$(pwd)"/runs:/usr/src/app/runs  yolov5-dvc:latest
+      python3 val.py --data data_configs/coco128.yaml --weights runs/train/weights/best.pt
+      --batch-size  32 --img-size 640 --conf-thres 0.001 --iou-thres 0.6 --max-det
+      50 --task val --project runs/val --name '' --verbose --save-conf --save-json
+      --exist-ok
     deps:
     - path: runs/train/weights/best.pt
-      md5: 307b9f8f7e90a394d1dceb3ab5898ce8
+      md5: 1013224332cb144f74ae831d05263bec
       size: 14641277
     params:
       params.yaml:
@@ -118,60 +117,57 @@ stages:
           yolo_flags: --verbose --save-conf --save-json --exist-ok
     outs:
     - path: runs/val/F1_curve.png
-      md5: 425605132f3f5e88a485dfdbb34b22f3
-      size: 59445
+      md5: d2c15da9b5f870b7b8d3f2d59ded5f74
+      size: 59839
     - path: runs/val/PR_curve.png
-      md5: fb05c9f882db817675711e80c9fcf1ae
-      size: 68583
+      md5: 32ec9b47698174ee7f34d9f08ee066dd
+      size: 68201
     - path: runs/val/P_curve.png
-      md5: 54b74dcee12a8fb8ffd3f27cf3bec4b6
-      size: 85645
+      md5: 7b0f40effb45aa153d9992c699c166e1
+      size: 86386
     - path: runs/val/R_curve.png
-      md5: 962dc460a85e18ec0c2a2961861ed63f
-      size: 61054
+      md5: 742e313e5054cc73b80d8cf49dcae434
+      size: 61047
     - path: runs/val/best_predictions.json
-      md5: b841283f28cb1f661f4cd0503c7f8632
-      size: 38969
+      md5: 84c9ede537d89b6d56975936762fd9e3
+      size: 58528
     - path: runs/val/confusion_matrix.png
-      md5: 15397306a40af8e9c5e9b91131a7298c
-      size: 553314
+      md5: a276468b26a39c9dd983f6a1ef45c584
+      size: 553426
   exports@2:
-    cmd: docker run --ipc=host  -v "$(pwd)"/datasets:/usr/src/datasets -v "$(pwd)"/runs:/usr/src/app/runs
-      openbot-vision-object-detection:latest python3 export.py  --data data/coco128.yaml
-      --weights runs/train/weights/best.pt --img-size 640 --batch-size  1 --opset
-      12 --topk-per-class 100 --topk-all 100 --iou-thres 0.45 --conf-thres 0.25 --include
-      coreml --verbose
+    cmd: docker run --ipc=host  -v "$(pwd)"/datasets:/usr/src/datasets -v "$(pwd)"/runs:/usr/src/app/runs  yolov5-dvc:latest
+      python3 export.py  --data data_configs/coco128.yaml --weights runs/train/weights/best.pt
+      --img-size 640 --batch-size  1 --opset 12 --topk-per-class 100 --topk-all 100
+      --iou-thres 0.45 --conf-thres 0.25 --include coreml --verbose
     deps:
     - path: runs/train/weights/best.pt
-      md5: 307b9f8f7e90a394d1dceb3ab5898ce8
+      md5: 1013224332cb144f74ae831d05263bec
       size: 14641277
     outs:
     - path: runs/train/weights/best.mlmodel
       md5: 46d94515a4bfef80dd869c96d2e0b82f
       size: 29321907
   exports@1:
-    cmd: docker run --ipc=host  -v "$(pwd)"/datasets:/usr/src/datasets -v "$(pwd)"/runs:/usr/src/app/runs
-      openbot-vision-object-detection:latest python3 export.py  --data data/coco128.yaml
-      --weights runs/train/weights/best.pt --img-size 640 --batch-size  1 --opset
-      12 --topk-per-class 100 --topk-all 100 --iou-thres 0.45 --conf-thres 0.25 --include
-      onnx --verbose
+    cmd: docker run --ipc=host  -v "$(pwd)"/datasets:/usr/src/datasets -v "$(pwd)"/runs:/usr/src/app/runs  yolov5-dvc:latest
+      python3 export.py  --data data_configs/coco128.yaml --weights runs/train/weights/best.pt
+      --img-size 640 --batch-size  1 --opset 12 --topk-per-class 100 --topk-all 100
+      --iou-thres 0.45 --conf-thres 0.25 --include onnx --verbose
     deps:
     - path: runs/train/weights/best.pt
-      md5: 307b9f8f7e90a394d1dceb3ab5898ce8
+      md5: 1013224332cb144f74ae831d05263bec
       size: 14641277
     outs:
     - path: runs/train/weights/best.onnx
       md5: c90745f520888d601ba50ba3d6769fa6
       size: 29352431
   exports@0:
-    cmd: docker run --ipc=host  -v "$(pwd)"/datasets:/usr/src/datasets -v "$(pwd)"/runs:/usr/src/app/runs
-      openbot-vision-object-detection:latest python3 export.py  --data data/coco128.yaml
-      --weights runs/train/weights/best.pt --img-size 640 --batch-size  1 --opset
-      12 --topk-per-class 100 --topk-all 100 --iou-thres 0.45 --conf-thres 0.25 --include
-      torchscript --verbose
+    cmd: docker run --ipc=host  -v "$(pwd)"/datasets:/usr/src/datasets -v "$(pwd)"/runs:/usr/src/app/runs  yolov5-dvc:latest
+      python3 export.py  --data data_configs/coco128.yaml --weights runs/train/weights/best.pt
+      --img-size 640 --batch-size  1 --opset 12 --topk-per-class 100 --topk-all 100
+      --iou-thres 0.45 --conf-thres 0.25 --include torchscript --verbose
     deps:
     - path: runs/train/weights/best.pt
-      md5: 307b9f8f7e90a394d1dceb3ab5898ce8
+      md5: 1013224332cb144f74ae831d05263bec
       size: 14641277
     outs:
     - path: runs/train/weights/best.torchscript

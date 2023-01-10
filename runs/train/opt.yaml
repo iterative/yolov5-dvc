@@ -1,6 +1,6 @@
 weights: models/weights/yolov5s.pt
 cfg: ''
-data: data/coco128.yaml
+data: data_configs/coco128.yaml
 hyp:
   lr0: 0.01
   lrf: 0.01
