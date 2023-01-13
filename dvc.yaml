@@ -24,7 +24,7 @@ stages:
     cmd: >- 
       docker run
       -v "$(pwd)"/data_configs:${docker_workdir}/data_configs
-      -v "$(pwd)"/datasets:${docker_datasets_dir}
+      -v ${data.datasets_dir}:${docker_datasets_dir}
       -v "$(pwd)"/models/weights:${docker_workdir}/models/weights
       -v "$(pwd)"/runs:${docker_workdir}/runs 
       ${YOLOV5_IMAGE} 
@@ -77,7 +77,7 @@ stages:
     cmd: >- 
       docker run --ipc=host
       -v "$(pwd)"/data_configs:${docker_workdir}/data_configs
-      -v "$(pwd)"/datasets:${docker_datasets_dir}
+      -v ${data.datasets_dir}:${docker_datasets_dir}
       -v "$(pwd)"/runs:${docker_workdir}/runs 
       ${YOLOV5_IMAGE}
       python3 val.py
@@ -116,7 +116,7 @@ stages:
     do:
       cmd: >- 
         docker run --ipc=host 
-        -v "$(pwd)"/datasets:${docker_datasets_dir}
+        -v ${data.datasets_dir}:${docker_datasets_dir}
         -v "$(pwd)"/runs:${docker_workdir}/runs 
         ${YOLOV5_IMAGE}
         python3 export.py 
