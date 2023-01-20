@@ -6,7 +6,8 @@ project:
   dir: '.'
 
 data:
-  datasets_dir: datasets
+  datasets_dir: $(pwd)/datasets
+  # datasets_dir: ${DATASETS_DIR}
   data_configs_dir: data_configs
   data_train: 'coco128'
   data_val: 'coco128'
