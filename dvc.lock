@@ -58,20 +58,20 @@ stages:
           yolo_flags: --exist-ok
     outs:
     - path: runs/train/F1_curve.png
-      md5: f0a56128991e0fd70d6d14e44d169aec
-      size: 81999
+      md5: bc60e32bb5223cb377428c69fbe6ff70
+      size: 93906
     - path: runs/train/PR_curve.png
-      md5: b53500b33e38ce1cec0a738f74962e74
-      size: 74494
+      md5: 951903eed69ec7ae5e03a272835c5f2d
+      size: 74394
     - path: runs/train/P_curve.png
-      md5: d039987a85e47f7d6bc37e632322a886
-      size: 144382
+      md5: ae7cf341d9759bf8fed0c1cdd437bf31
+      size: 153765
     - path: runs/train/R_curve.png
-      md5: cc4f7fe03495d687257756fb66814c27
-      size: 88699
+      md5: af2f06a06930fa1fc316641c9f31931f
+      size: 99009
     - path: runs/train/confusion_matrix.png
-      md5: 2c8e50429e66277a0865db53ab97c3b7
-      size: 553900
+      md5: f68680cb912de8e6b3072a7f50f0fe53
+      size: 553826
     - path: runs/train/hyp.yaml
       md5: 0b99b67c046abfdcc69005b3d8db9e83
       size: 373
@@ -82,16 +82,16 @@ stages:
       md5: aaf6ec90cd751d5f88fad529d0ca5147
       size: 211515
     - path: runs/train/results.csv
-      md5: 35b1acb13ec13a0e39678114ff147dbe
+      md5: 2f70602bf07f85480aa10ff96f9e57c6
       size: 1176
     - path: runs/train/results.png
-      md5: 4eccd035d8b3d3235a77680a42e34bab
-      size: 268274
+      md5: 0848455b9b8550f3538ca898ecafa954
+      size: 291783
     - path: runs/train/weights/best.pt
-      md5: 952ca1412bc48b3f955b872acb1bc3e7
+      md5: 59113eb713e3c4ca1318991713a21848
       size: 14641277
     - path: runs/train/weights/last.pt
-      md5: 10845c6455da2fcac48e577c423c0b47
+      md5: 6ff7de0f236a99fb240c327dff56e331
       size: 14641277
   val:
     cmd: docker run --ipc=host -v "$(pwd)"/data_configs:/usr/src/app/data_configs
@@ -102,7 +102,7 @@ stages:
       --exist-ok
     deps:
     - path: runs/train/weights/best.pt
-      md5: 952ca1412bc48b3f955b872acb1bc3e7
+      md5: 59113eb713e3c4ca1318991713a21848
       size: 14641277
     params:
       params.yaml:
@@ -117,23 +117,23 @@ stages:
           yolo_flags: --verbose --save-conf --save-json --exist-ok
     outs:
     - path: runs/val/F1_curve.png
-      md5: 714a70cb9b643ee94594763a45fb5ae8
-      size: 58448
+      md5: 425605132f3f5e88a485dfdbb34b22f3
+      size: 59445
     - path: runs/val/PR_curve.png
-      md5: 5526b42774145f95d9ef4d643b9c173d
-      size: 67751
+      md5: 7cc6c2685e94f26a5ccd72ed4c5faccf
+      size: 65113
     - path: runs/val/P_curve.png
-      md5: db421cfba20734db862d092d74313f84
-      size: 79428
+      md5: 54b74dcee12a8fb8ffd3f27cf3bec4b6
+      size: 85645
     - path: runs/val/R_curve.png
-      md5: 402846b83800e896e23bbb1aa57082ec
-      size: 60739
+      md5: 962dc460a85e18ec0c2a2961861ed63f
+      size: 61054
     - path: runs/val/best_predictions.json
-      md5: 631924abe99589e924d7eebdb0730db6
-      size: 58597
+      md5: b841283f28cb1f661f4cd0503c7f8632
+      size: 38969
     - path: runs/val/confusion_matrix.png
-      md5: 06c16f42c3710b7dedbebea6503666db
-      size: 553249
+      md5: 15397306a40af8e9c5e9b91131a7298c
+      size: 553314
   exports@2:
     cmd: docker run --ipc=host  -v $(pwd)/datasets:/usr/src/datasets -v "$(pwd)"/runs:/usr/src/app/runs  yolov5-dvc:latest
       python3 export.py  --data data_configs/coco128.yaml --weights runs/train/weights/best.pt
@@ -141,11 +141,11 @@ stages:
       --iou-thres 0.45 --conf-thres 0.25 --include coreml --verbose
     deps:
     - path: runs/train/weights/best.pt
-      md5: 952ca1412bc48b3f955b872acb1bc3e7
+      md5: 59113eb713e3c4ca1318991713a21848
       size: 14641277
     outs:
     - path: runs/train/weights/best.mlmodel
-      md5: dc156fdc9aa2a99a4babdc7a3cc0782b
+      md5: 46d94515a4bfef80dd869c96d2e0b82f
       size: 29321907
   exports@1:
     cmd: docker run --ipc=host  -v $(pwd)/datasets:/usr/src/datasets -v "$(pwd)"/runs:/usr/src/app/runs  yolov5-dvc:latest
@@ -154,11 +154,11 @@ stages:
       --iou-thres 0.45 --conf-thres 0.25 --include onnx --verbose
     deps:
     - path: runs/train/weights/best.pt
-      md5: 952ca1412bc48b3f955b872acb1bc3e7
+      md5: 59113eb713e3c4ca1318991713a21848
       size: 14641277
     outs:
     - path: runs/train/weights/best.onnx
-      md5: da7a36060d6536df8ce4d64688f1ee9f
+      md5: c90745f520888d601ba50ba3d6769fa6
       size: 29352431
   exports@0:
     cmd: docker run --ipc=host  -v $(pwd)/datasets:/usr/src/datasets -v "$(pwd)"/runs:/usr/src/app/runs  yolov5-dvc:latest
@@ -167,9 +167,9 @@ stages:
       --iou-thres 0.45 --conf-thres 0.25 --include torchscript --verbose
     deps:
     - path: runs/train/weights/best.pt
-      md5: 952ca1412bc48b3f955b872acb1bc3e7
+      md5: 59113eb713e3c4ca1318991713a21848
       size: 14641277
     outs:
     - path: runs/train/weights/best.torchscript
-      md5: 6bac6a12f13b9029ca02ef916da29646
+      md5: 128f80727d835f488ee76d8164663bb8
       size: 29378005
