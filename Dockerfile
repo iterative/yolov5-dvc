@@ -1,4 +1,5 @@
-FROM ultralytics/yolov5:latest-cpu
+# FROM ultralytics/yolov5:latest-cpu
+FROM ultralytics/yolov5:v7.0-cpu
 
 # Install system dependencies
 RUN apt-get update && \
