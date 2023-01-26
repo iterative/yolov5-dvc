@@ -92,6 +92,8 @@ stages:
       --project ${val.project}
       --name ''
       ${val.yolo_flags}
+
+      bash src/fill_val_empty_outs.sh ${val.project}
     params:
       - val
     deps: 
